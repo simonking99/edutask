@@ -5,6 +5,7 @@ from dotenv import dotenv_values
 import os
 import pymongo
 
+
 # Fixture to initiliaze connection to Database
 @pytest.fixture
 def db():
@@ -66,7 +67,7 @@ def test_create_add_to_valid_data(dao):
     assert result  
 
 def test_create_missing_data(dao):
-    '''Test creating a document with a missing required value'''
+    '''Test creating a document with a missing required properties'''
     # Valid data for user collection
     valid_data = {
         "firstName": "testfirstname",
