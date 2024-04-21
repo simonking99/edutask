@@ -91,4 +91,4 @@ def test_create_unique_value(dao):
 
     # Attempt to insert a second document with the same email address
     result = dao.create(valid_data)
-    assert result 
+    assert not result 
