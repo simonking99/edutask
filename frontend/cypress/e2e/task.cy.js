@@ -72,7 +72,7 @@ describe('Logging into the system', () => {
     //Click on the img
     cy.get('img').click();
     //Check if Add submit button is disabled
-    cy.get('input[type="submit"][value="Add"]').should('have.attr', 'disabled');
+    cy.get('input[type="submit"][value="Add"]').should('be.disabled');
     })
 
   after(function () {
