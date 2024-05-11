@@ -21,16 +21,18 @@ describe('Logging into the system', () => {
       })
   })
 
-  before(function () {
+
+  beforeEach(function () {
+    cy.visit('http://localhost:3000');
     // enter the main main page
     // Check if user is already logged in
-    cy.visit('http://localhost:3000');
     cy.get('h1')
-    .should('contain.text', 'Login')
-     // detect a div which contains "Email Address", find the input and type (in a declarative way)
-     cy.contains('div', 'Email Address')
-     .find('input[type=text]')
-     .type(email)
+      .should('contain.text', 'Login')
+
+    // detect a div which contains "Email Address", find the input and type (in a declarative way)
+    cy.contains('div', 'Email Address')
+      .find('input[type=text]')
+      .type(email)
     // alternative, imperative way of detecting that input field
     //cy.get('.inputwrapper #email')
     //    .type(email)
@@ -44,12 +46,36 @@ describe('Logging into the system', () => {
       .should('contain.text', 'Your tasks, ' + name)
   })
 
-  it('Add task', () => {
 
+  it('Creates a task', () => {
+  // Write on the title field
+  cy.get('#title').type('Football');
+  // Write on the url field
+  cy.get('#url').type('7cEpNIjMO7c');
+  // Click on the create task button
+  cy.contains('Create new Task').click();
   })
 
+  it('Add a todo item with description', () => {
+    //Click the img
+    cy.get('img').click();
+    //Write a new description for todo items
+    cy.get('input[type="text"][placeholder="Add a new todo item"]')
+    .type('Real Madrid');
+    //Click on the Add submit button
+    cy.get('input[type="submit"][value="Add"]').click();
+    // Assert that the new todo item is added to the list
+    cy.contains('Real Madrid').should('exist');
+    })
 
-after(function () {
+  it('Add a todo item withouth description', () => {
+    //Click on the img
+    cy.get('img').click();
+    //Check if Add submit button is disabled
+    cy.get('input[type="submit"][value="Add"]').should('have.attr', 'disabled');
+    })
+
+  after(function () {
     // clean up by deleting the user from the database
     cy.request({
       method: 'DELETE',
