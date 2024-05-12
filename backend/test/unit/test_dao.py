@@ -25,10 +25,12 @@ def dao():
     dao = DAO(collection_name)
     return dao
 
+@pytest.mark.unit
 def test_database_connection(db): 
     ''' Test database connection '''
     assert db is not None
 
+@pytest.mark.unit
 def test_create_valid_data(dao):
     '''Test creating a document with valid data'''
     # Valid data for user collection
@@ -41,6 +43,7 @@ def test_create_valid_data(dao):
     result = dao.create(valid_data)
     assert result
 
+@pytest.mark.unit
 def test_create_invalid_data(dao):
     '''Test creating a document with invalid data'''
     # Valid data for user collection
@@ -53,6 +56,7 @@ def test_create_invalid_data(dao):
     result = dao.create(valid_data)
     assert result
 
+@pytest.mark.unit
 def test_create_add_to_valid_data(dao):
     '''Test adding additional data to a valid document'''
     # Valid data for user collection
@@ -66,6 +70,7 @@ def test_create_add_to_valid_data(dao):
     result = dao.create(valid_data)
     assert result  
 
+@pytest.mark.unit
 def test_create_missing_data(dao):
     '''Test creating a document with a missing required properties'''
     # Valid data for user collection
@@ -77,6 +82,7 @@ def test_create_missing_data(dao):
     result = dao.create(valid_data)
     assert result 
 
+@pytest.mark.unit
 def test_create_unique_value(dao):
     '''Test creating a document by inserting an un unique value'''
     # Valid data for user collection

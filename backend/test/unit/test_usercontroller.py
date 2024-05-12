@@ -2,6 +2,7 @@ import pytest
 import unittest.mock as mock
 from src.controllers.usercontroller import UserController
 
+@pytest.mark.unit
 def test_valid_email_with_no_user():
     # Mocking the dependencies
     mocked_usercontroller = mock.MagicMock()
@@ -15,7 +16,7 @@ def test_valid_email_with_no_user():
     validation_result = sut.get_user_by_email('test4444@test.com')
     assert validation_result is None
 
-
+@pytest.mark.unit
 def test_valid_email_with_single_user():
     # Mocking the dependencies
     mocked_usercontroller = mock.MagicMock()
@@ -30,6 +31,7 @@ def test_valid_email_with_single_user():
     # Assert the result
     assert validation_result
 
+@pytest.mark.unit
 def test_valid_email_with_multiple_users():
     # Mocking the dependencies
     mocked_usercontroller = mock.MagicMock()
@@ -44,6 +46,7 @@ def test_valid_email_with_multiple_users():
     # Assert the result
     assert validation_result
 
+@pytest.mark.unit
 def test_unvalid_email():
     mocked_usercontroller = mock.MagicMock()
     # Mocking the dependencies
