@@ -14,10 +14,11 @@ jobs:
     steps: 
       - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10' # Use '3.x' to use the latest Python 3 version available
+          cache: 'pip'
       
       - name: Install dependencies
         run: |
@@ -27,4 +28,3 @@ jobs:
       - name: Unit Tests
         run: |
           python -m pytest -m unit
-        working-directory: ./backend
