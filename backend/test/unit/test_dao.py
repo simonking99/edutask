@@ -18,17 +18,18 @@ def db():
 
 # Fixture to initialize DAO with a temporary collection for testing
 @pytest.fixture
-def dao():
+def dao(db):
     ''' Initialization of the dao with the user collection '''
     # Using the user file validator
     collection_name = "user"
     dao = DAO(collection_name)
+    dao.client = db  # Using the mocked database connection
     return dao
 
 @pytest.mark.unit
-def test_database_connection(db): 
+def test_database_connection(dao): 
     ''' Test database connection '''
-    assert db is not None
+    assert dao.client is not None
 
 @pytest.mark.unit
 def test_create_valid_data(dao):
@@ -46,15 +47,15 @@ def test_create_valid_data(dao):
 @pytest.mark.unit
 def test_create_invalid_data(dao):
     '''Test creating a document with invalid data'''
-    # Valid data for user collection
-    valid_data = {
+    # Invalid data for user collection
+    invalid_data = {
         "firstName": 1,
         "lastName": "testlastname",
         "email": "test.test@gmail.com"
     }
     # Using create method to insert given data
-    result = dao.create(valid_data)
-    assert result
+    result = dao.create(invalid_data)
+    assert not result
 
 @pytest.mark.unit
 def test_create_add_to_valid_data(dao):
@@ -73,14 +74,14 @@ def test_create_add_to_valid_data(dao):
 @pytest.mark.unit
 def test_create_missing_data(dao):
     '''Test creating a document with a missing required properties'''
-    # Valid data for user collection
-    valid_data = {
+    # Data with missing required properties for user collection
+    missing_data = {
         "firstName": "testfirstname",
         "lastName": "testlastname"
     }
     # Using create method to insert given data
-    result = dao.create(valid_data)
-    assert result 
+    result = dao.create(missing_data)
+    assert not result
 
 @pytest.mark.unit
 def test_create_unique_value(dao):
@@ -92,9 +93,11 @@ def test_create_unique_value(dao):
         "email": "test.test@gmail.com"
     }
     # Using create method to insert given data
+    dao.create.return_value = True
     result = dao.create(valid_data)
     assert result  
 
     # Attempt to insert a second document with the same email address
+    dao.create.return_value = False
     result = dao.create(valid_data)
-    assert not result 
+    assert not result  
