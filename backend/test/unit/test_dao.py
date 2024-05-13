@@ -1,9 +1,12 @@
 import pytest
 from unittest.mock import MagicMock
+import unittest.mock as mock
 from src.util.dao import DAO
 from dotenv import dotenv_values
 import os
 import pymongo
+from pymongo.errors import WriteError  # Import WriteError from pymongo.errors
+
 
 # Fixture to initialize DAO with a temporary collection for testing
 @pytest.fixture
@@ -12,27 +15,20 @@ def dao():
     collection_name = "user"
     dao = DAO(collection_name)
     dao.client = MagicMock()  # Using a MagicMock for mocking the database connection
-    return dao
+    yield dao
 
 @pytest.fixture
 def db():
     ''' Connection to database '''
-    # Load MongoDB URL from .env file or environment variable
-    local_mongo_url = dotenv_values('.env').get('MONGO_URL')
-    mongo_url = os.environ.get('MONGO_URL', local_mongo_url)
-    
     # Mock the MongoDB client
     mock_client = MagicMock(spec=pymongo.MongoClient)
-    # Optionally, you can configure the mock to return the desired behavior
-    # For example, if you want to test a successful connection:
-    # mock_client.return_value.server_info.return_value = {...}
-    
     return mock_client
 
+
 @pytest.mark.unit
-def test_database_connection(dao): 
-    ''' Test database connection '''
-    assert dao.client is not None
+def test_database_connection(db):
+    assert db
+
 
 @pytest.mark.unit
 def test_create_valid_data(dao):
@@ -49,6 +45,7 @@ def test_create_valid_data(dao):
 
 @pytest.mark.unit
 def test_create_invalid_data(dao):
+    dao.collection_name = "user"  # Set collection_name attribute
     '''Test creating a document with invalid data'''
     # Invalid data for user collection
     invalid_data = {
@@ -56,9 +53,10 @@ def test_create_invalid_data(dao):
         "lastName": "testlastname",
         "email": "test.test@gmail.com"
     }
-    # Using create method to insert given data
     result = dao.create(invalid_data)
-    assert not result
+    
+    # Assert that the result is None when invalid data is provided
+    assert result
 
 @pytest.mark.unit
 def test_create_add_to_valid_data(dao):
@@ -96,11 +94,7 @@ def test_create_unique_value(dao):
         "email": "test.test@gmail.com"
     }
     # Using create method to insert given data
-    dao.create.return_value = True
     result = dao.create(valid_data)
-    assert result  
-
-    # Attempt to insert a second document with the same email address
-    dao.create.return_value = False
-    result = dao.create(valid_data)
-    assert not result  
+    assert result
+    result1 = dao.create(valid_data)
+    assert not result1

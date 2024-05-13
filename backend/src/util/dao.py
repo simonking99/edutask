@@ -59,9 +59,11 @@ class DAO:
 
             # fetch and return the created object
             obj = self.collection.find_one({'_id': inserted_id})
+            print("Successfully created document:", obj)  # Add this print statement
             return self.to_json(obj)
         except Exception as e:
             # forward any pymongo.errors.WriteError that occurs during insert_one
+            print("Failed to create document:", e)  # Add this print statement
             raise
 
     def findOne(self, id: str):
