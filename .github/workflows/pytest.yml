@@ -21,8 +21,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Change to directory containing docker-compose.yaml
-        run: cd ../../ && docker-compose up -d
+      - name: Change to repository root
+        run: cd $GITHUB_WORKSPACE
+
+      - name: Set up Docker Compose
+        run: docker-compose up -d
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -35,8 +38,8 @@ jobs:
           pip install -r backend/requirements.pip
 
       - name: Wait for MongoDB to start
-        run: docker-compose -f ../../docker-compose.yaml exec -T mongo bash -c 'while ! mongo --eval "db.stats()" &>/dev/null; do sleep 1; done'
+        run: docker-compose exec -T mongo bash -c 'while ! mongo --eval "db.stats()" &>/dev/null; do sleep 1; done'
 
       - name: Unit Tests
         run: |
-          docker-compose -f ../../docker-compose.yaml exec backend python -m pytest -m unit
+          docker-compose exec backend python -m pytest -m unit
