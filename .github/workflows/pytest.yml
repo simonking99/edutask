@@ -21,8 +21,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker Compose
-        run: docker-compose -f ../../docker-compose.yaml up -d
+      - name: Change to directory containing docker-compose.yaml
+        run: cd ../../ && docker-compose up -d
 
       - name: Set up Python
         uses: actions/setup-python@v2
