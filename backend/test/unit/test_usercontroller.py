@@ -51,11 +51,10 @@ def test_unvalid_email():
     mocked_usercontroller = mock.MagicMock()
     # Mocking the dependencies
     mocked_usercontroller.find.return_value = [{'email': 'unvalid_email'}]
-    # Creating unvalid email
+    # Creating invalid email
 
     # Creating UserController instance with mocked data_object
     sut = UserController(dao=mocked_usercontroller)
-    # Call the method under test
-    validation_result = sut.get_user_by_email('unvalid_email')
-    # Assert the result
-    assert validation_result
+    # Call the method under test and assert that it raises a ValueError
+    with pytest.raises(ValueError):
+        sut.get_user_by_email('unvalid_email')
