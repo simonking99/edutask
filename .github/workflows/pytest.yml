@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r backend/requirements.pip  # Adjust path to requirements.pip inside backend folder
+        pip install -r backend/requirements.txt  # Adjust path to requirements.pip inside backend folder
 
     - name: Unit tests
       run: |
