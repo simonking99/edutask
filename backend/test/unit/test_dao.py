@@ -5,8 +5,6 @@ from src.util.dao import DAO
 from dotenv import dotenv_values
 import os
 import pymongo
-from pymongo.errors import WriteError  # Import WriteError from pymongo.errors
-
 
 # Fixture to initialize DAO with a temporary collection for testing
 @pytest.fixture
