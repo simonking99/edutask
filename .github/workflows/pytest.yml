@@ -33,9 +33,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.pip
 
-      - name: Wait for MongoDB to be ready
-        run: dockerize -wait tcp://localhost:27017 -timeout 1m
-
       - name: Unit Tests
         run: |
           MONGO_URL=$MONGO_URL python -m pytest -m unit
