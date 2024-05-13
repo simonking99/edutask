@@ -34,6 +34,6 @@ jobs:
           pip install -r backend/requirements.pip
 
       - name: Unit Tests
-        run: |
-          MONGO_URL=$MONGO_URL python -m pytest -m unit
-        working-directory: ./backend
+        run: python -m pytest -m unit
+        env:
+          MONGO_URL: ${{ env.MONGO_URL }}
