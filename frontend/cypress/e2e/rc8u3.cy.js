@@ -1,72 +1,70 @@
-describe('Adding a todo to an added task.', () => {
-    let uid; // user id
-    let name; // name of the user (firstName + ' ' + lastName)
-    let email; // email of the user
+describe('R8UC1: Adding a todo to an added task', () => {
+    let uid;
+    let email;
 
-    // This block runs once before all tests
-    before(function() {
-        cy.fixture('user.json')
-            .then((user) => {
+    before(function () {
+        // Create a new user
+        cy.fixture('user.json').then((user) => {
+            cy.request({
+                method: 'POST',
+                url: 'http://localhost:5000/users/create',
+                form: true,
+                body: user
+            }).then((response) => {
+                uid = response.body._id.$oid;
+                email = user.email;
+
+                // Create a new task with an Test todo item
+                let data = {
+                    title: "Football",
+                    description: "Real Madrid vs Bayern Munich",
+                    url: "7cEpNIjMO7c",
+                    userid: uid,
+                    todos: "Test todo"
+                };
+
                 cy.request({
                     method: 'POST',
-                    url: 'http://localhost:5000/users/create',
+                    url: 'http://localhost:5000/tasks/create',
                     form: true,
-                    body: user
-                }).then((response) => {
-                    uid = response.body._id.$oid;
-                    name = user.firstName + ' ' + user.lastName;
-                    email = user.email;
-
-                    cy.visit('http://localhost:3000');
-
-                    cy.contains('div', 'Email Address')
-                        .find('input[type=text]')
-                        .type(email);
-                    cy.get('form')
-                        .submit();
-
-                    cy.get('.inputwrapper #title')
-                        .type("Football");
-                    cy.get('.inputwrapper #url')
-                        .type("7cEpNIjMO7c");
-                    cy.get('form')
-                        .submit();
-
-                    cy.contains('Football')
-                        .click();
-    
-                    cy.get('.inline-form')
-                        .find('input[type=text]')
-                        .type("Real Madrid vs Bayern Munich");
-                    cy.get('.inline-form').submit();
+                    body: data
                 });
             });
+        });
     });
 
-    beforeEach(function() {
+    beforeEach(function () {
+        // Navigate to the main page and log in
         cy.visit('http://localhost:3000');
         cy.contains('div', 'Email Address')
             .find('input[type=text]')
             .type(email);
-        cy.get('form')
-            .submit();
-        cy.contains('Football')
-            .click();
+        cy.get('form').submit();
+        cy.contains('Football').click();
     });
 
-    it('R8UC3: Test to try removing the Real Madrid vs Bayern Munich todo item', () => {
-        //Click the remover to delete the Real Madrid vs Bayern Munich todo-list item
-        cy.contains('Real Madrid vs Bayern Munich').should('exist');
-        cy.get('.todo-item:contains("Real Madrid vs Bayern Munich") .remover').click();
-        cy.contains('Real Madrid vs Bayern Munich').should('not.exist');
-    })
-
-after(function () {
-    cy.request({
-        method: 'DELETE',
-        url: `http://localhost:5000/users/${uid}`
-    }).then((response) => {
-        cy.log(response.body);
+    it('Adds a new todo when the input field is not empty.', () => {
+        cy.get('.inline-form input[type=text]').type('Test create new Todo Item');
+        cy.get('.inline-form').submit();
+        cy.get('.todo-list').should('contain.text', 'Test create new Todo Item');
     });
-});
+
+    it('Delete the second todo item by clicking on x', () => {
+        cy.contains('li.todo-item', 'Test create new Todo Item')
+            .find('.remover')
+            .click()
+            cy.contains('li.todo-item', 'Test create new Todo Item')
+            .should('not.exist');
+    });
+    
+
+    after(function () {
+        // Clean up by deleting the user
+        cy.request({
+            method: 'DELETE',
+            url: `http://localhost:5000/users/${uid}`
+        }).then((response) => {
+            cy.log(response.body);
+        });
+    });
 });
