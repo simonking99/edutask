@@ -22,9 +22,9 @@ class DAO:
         """
 
         # load the local mongo URL (something like mongodb://localhost:27017)
-        LOCAL_MONGO_URL = 'mongodb://root:root@localhost:27017'
+        LOCAL_MONGO_URL = 'mongodb://root:root@mongodb:27017'
         # check out of the environment (which can be overridden by the docker-compose file) also specifies an URL, and use that instead if it exists
-        MONGO_URL = 'mongodb://root:root@localhost:27017'
+        MONGO_URL = 'mongodb://root:root@mongodb:27017'
 
         # connect to the MongoDB and select the appropriate database
         print(
@@ -59,11 +59,9 @@ class DAO:
 
             # fetch and return the created object
             obj = self.collection.find_one({'_id': inserted_id})
-            print("Successfully created document:", obj)  # Add this print statement
             return self.to_json(obj)
         except Exception as e:
             # forward any pymongo.errors.WriteError that occurs during insert_one
-            print("Failed to create document:", e)  # Add this print statement
             raise
 
     def findOne(self, id: str):
