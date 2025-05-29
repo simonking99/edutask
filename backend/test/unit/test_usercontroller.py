@@ -53,15 +53,13 @@ def test_valid_email_with_multiple_users():
 @pytest.mark.unit
 def test_invalid_email():
     mocked_uc = mock.MagicMock()
-
-    # Ställer in mocken att returnera en email med flertal users
     mocked_uc.find.return_value = []
     sut = UserController(dao=mocked_uc)
 
-    # Anropar get_user_by_email-metoden med en ogiltig e-postadress
-    validation_result = sut.get_user_by_email('1234')
+    # Förväntar oss att ett ValueError kastas för ogiltig e-post
+    with pytest.raises(ValueError):
+        sut.get_user_by_email('1234')
 
-    assert validation_result
 
 @pytest.mark.unit
 def test_exception():
