@@ -1,9 +1,10 @@
 describe('R8UC1: Adding a todo to an added task', () => {
     let uid;
     let email;
+    let taskId;
 
     before(function () {
-        // Create a new user
+        // Creating a new user and logging in
         cy.fixture('user.json').then((user) => {
             cy.request({
                 method: 'POST',
@@ -14,8 +15,8 @@ describe('R8UC1: Adding a todo to an added task', () => {
                 uid = response.body._id.$oid;
                 email = user.email;
 
-                // Create a new task with an Test todo item
-                let data = {
+                // Create a task with a todo item
+                const data = {
                     title: "Football",
                     description: "Real Madrid vs Bayern Munich",
                     url: "7cEpNIjMO7c",
@@ -28,10 +29,12 @@ describe('R8UC1: Adding a todo to an added task', () => {
                     url: 'http://localhost:5000/tasks/create',
                     form: true,
                     body: data
+                }).then((res) => {
+                    taskId = res.body[0]._id.$oid || res.body[0]._id;
                 });
             });
         });
-    });
+});
 
     beforeEach(function () {
         // Navigate to the main page and log in
@@ -43,18 +46,17 @@ describe('R8UC1: Adding a todo to an added task', () => {
         cy.contains('Football').click();
     });
 
-    it('Adds a new todo when the input field is not empty.', () => {
-        cy.get('.inline-form input[type=text]').type('Test create new Todo Item');
-        cy.get('.inline-form').submit();
-        cy.get('.todo-list').should('contain.text', 'Test create new Todo Item');
-    });
-
-    it('Delete the second todo item by clicking on x', () => {
-        cy.contains('li.todo-item', 'Test create new Todo Item')
-            .find('.remover')
-            .click()
-            cy.contains('li.todo-item', 'Test create new Todo Item')
-            .should('not.exist');
+    it('Delete the pre created todo item by clicking on x', () => {
+        cy.contains('li.todo-item', 'Test todo').find('.remover').click()
+        // Verify that the todo item no longer exists in the UI
+        cy.contains('li.todo-item', 'Test todo').should('not.exist');
+        
+        // Verify that the todo item is also removed from the backend
+        cy.request(`http://localhost:5000/tasks/byid/${taskId}`).then((res) => {
+            console.log(res.body)
+            const exists = res.body.todos.some(t => t.description === 'Test todo');
+            expect(exists).to.be.false;
+        });
     });
     
 
